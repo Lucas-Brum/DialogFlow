@@ -7,7 +7,6 @@ const express = require("express");
 const app = express();
 var bodyParser = require("body-parser");
 var buscaCep = require("busca-cep");
-var mysql = require("mysql");
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
