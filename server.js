@@ -73,54 +73,69 @@ app.post("/cursowebhook", (request, response) => {
     });
   } else if(intentName == "Processo.seletivo - yes" ){
       
-      var aluno_cep = request.body.queryResult.parameters['aluno-cep'];
-      
-      buscaCep(aluno_cep, {sync: false, timeout: 1000})
-      .then(endereco => {
-        
-        var aluno_nome = request.body.queryResult.parameters['aluno-nome'];
-        var aluno_cpf = request.body.queryResult.parameters['aluno-cpf'];
-        var aluno_curso = request.body.queryResult.parameters['aluno-curso'];
-        
-        var aluno_endereco = endereco.logradouro+"-"+endereco.bairro+","+endereco.localidade+"-"+endereco.uf+"--"+endereco.cep;
-        
-        response.json({"fulfillmentText":"Voce foi cadastrado para o nosso processo seletivo - Verifique a data das prova"})
-        
-        var connection = mysql.createConnection({
-          host     : process.env.MYSQL_HOST,
-          user     : process.env.MYSQL_USER,
-          password : process.env.MYSQL_PASSWORD,
-          database : process.env.MYSQL_DB
-        });
-      
-      connection.connect();
-        
-     connection.query("insert into 3280724_lucas.alunos values ('"+aluno_nome+"','"
-                      +aluno_cpf+"','"
-                      +aluno_curso+"','"
-                      +aluno_endereco+"')",
-                      
-    function (error, results, fiels){
-       if(error) throw error;
-       connection.end();
-       
-       response.json({"fulfillmentText":"Voce foi cadastrado para o nosso processo seletivo - Verifique a data das prova"})
-     });
-        
-        
-  })
-  
-      
-    }
+    var aluno_cep = request.body.queryResult.parameters['aluno-cep'];
     
+    buscaCep(aluno_cep, {sync: false, timeout: 1000})
+    .then(endereco => {
+      
+      var aluno_nome = request.body.queryResult.parameters['aluno-nome'];
+      var aluno_cpf = request.body.queryResult.parameters['aluno-cpf'];
+      var aluno_curso = request.body.queryResult.parameters['aluno-curso'];
+      
+      var aluno_endereco = endereco.logradouro+"-"+endereco.bairro+","+endereco.localidade+"-"+endereco.uf+"--"+endereco.cep;
+      
+      response.json({"fulfillmentText":"Voce foi cadastrado para o nosso processo seletivo - Verifique a data das prova"})
+      
+    
+
+     const { Client } = require('pg');
+
+      const client = new Client({
+      host: 'ec2-54-224-124-241.compute-1.amazonaws.com',
+      database: 'decps7e76fuc0u',
+      user: 'atudzfubgxozep',
+      password: '6b13d3dce3e4d3b658d2551587362b7a385d0ae494c63b3ffd9a55eaae0a712f',
+      port: '5432'
+      });
+
+      client.connect();
+
+      client.query("insert into alunos values ('"+aluno_nome+"','"
+      +aluno_cpf+"','"
+      +aluno_curso+"','"
+      +aluno_endereco+"')", (err, res) => {
+
+        if (err) throw err;
+        for (let row of res.rows) {
+          console.log(JSON.stringify(row));
+        }
+        client.end();
+
+        response.json({"fulfillmentText":"Voce foi cadastrado para o nosso processo seletivo - Verifique a data das prova"})
+
+      });
+     
+     
+   });
+      
+      
+
+
+    
+  }
   
-  
-  
-  
-  
+
+
+
+
+
 });
+
+
+
+
 
 // listen for requests :)
 const listener = app.listen(process.env.PORT, () => {
-  console.log("Your app is listening on port " + listener.address().port);
+console.log("Your app is listening on port " + listener.address().port);
 });
