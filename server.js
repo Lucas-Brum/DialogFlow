@@ -29,6 +29,10 @@ app.get("/", (request, response) => {
   response.sendFile(__dirname + "/views/index.html");
 });
 
+const {WebhookClient} = require('dialogflow-fulfillment');///add 
+
+
+
 // send the default array of dreams to the webpage
 app.get("/dreams", (request, response) => {
   // express helps us take JS objects and send them as JSON
@@ -36,6 +40,26 @@ app.get("/dreams", (request, response) => {
 });
 
 app.post("/cursowebhook", (request, response) => {
+    ///new code
+  const agent = new WebhookClient({ request:request, response:response });
+
+  let intentMap = new Map();
+  intentMap.set('validar.promocao', validar_promocao);
+
+  agent.handleRequest(intentMap);
+
+  function validar_promocao(agent){
+    let idade = parseInt(agent.parameters.idade);
+    
+    if(idade >=18){
+      agent.add('Tem que ter essa msg')
+      agent.setFolloupEvent('cupons');
+    }else{
+      agent.add('heroku -- Essa promoção só é valida para maiores de 18 anos')
+    }
+  }
+  /////new code end
+
   var intentName = request.body.queryResult.intent.displayName;
 
   if (intentName == "Processo.seletivo") {
