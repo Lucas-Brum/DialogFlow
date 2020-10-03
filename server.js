@@ -39,7 +39,7 @@ app.get("/dreams", (request, response) => {
   response.json(dreams);
 });
 
-app.post("/cursowebhook", (request, response) => {
+app.post("/cursowebhook", function (request, response)  {
     ///new code
   const agent = new WebhookClient({ request:request, response:response });
 
@@ -53,7 +53,7 @@ app.post("/cursowebhook", (request, response) => {
     
     if(idade >=18){
       agent.add('Tem que ter essa msg')
-      agent.setFolloupEvent('cupons');
+      agent.setFollowupEvent('cupons');
     }else{
       agent.add('heroku -- Essa promoção só é valida para maiores de 18 anos')
     }
